@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS auto-start (launchd) for the watcher + search server.
+
+  Install:
+    1. Edit the two /ABSOLUTE/PATH/TO placeholders below.
+    2. cp scripts/com.local.screenshotsearch.plist ~/Library/LaunchAgents/
+    3. launchctl load ~/Library/LaunchAgents/com.local.screenshotsearch.plist
+
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.local.screenshotsearch.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.local.screenshotsearch</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/ABSOLUTE/PATH/TO/screenshot-search/.venv/bin/python</string>
+        <string>-m</string>
+        <string>app.main</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/ABSOLUTE/PATH/TO/screenshot-search</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/screenshot-search.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/screenshot-search.error.log</string>
+</dict>
+</plist>

@@ -1,0 +1,23 @@
+# Linux auto-start (systemd, user service).
+#
+# Install:
+#   1. Edit the two /ABSOLUTE/PATH/TO placeholders below.
+#   2. mkdir -p ~/.config/systemd/user
+#   3. cp scripts/screenshot-search.service ~/.config/systemd/user/
+#   4. systemctl --user daemon-reload
+#   5. systemctl --user enable --now screenshot-search.service
+#
+# Logs: journalctl --user -u screenshot-search -f
+
+[Unit]
+Description=Local screenshot/downloads search
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/ABSOLUTE/PATH/TO/screenshot-search
+ExecStart=/ABSOLUTE/PATH/TO/screenshot-search/.venv/bin/python -m app.main
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,5 @@
+$8a84cae5-b28b-44dd-a358-f4c29fd53017²Ôid ÿÿÿÿÿÿÿÿÿ*string08#filepath ÿÿÿÿÿÿÿÿÿ*string08#filename ÿÿÿÿÿÿÿÿÿ*string08ext ÿÿÿÿÿÿÿÿÿ*string08#category ÿÿÿÿÿÿÿÿÿ*string08$
+confidence ÿÿÿÿÿÿÿÿÿ*float08,classifier_source ÿÿÿÿÿÿÿÿÿ*string08#ocr_text ÿÿÿÿÿÿÿÿÿ*string08)thumbnail_path ÿÿÿÿÿÿÿÿÿ*string08%
+created_at	 ÿÿÿÿÿÿÿÿÿ*double08%
+indexed_at
+ ÿÿÿÿÿÿÿÿÿ*double084vector ÿÿÿÿÿÿÿÿÿ*fixed_size_list:float:51208

@@ -1,0 +1,89 @@
+# =============================================================================
+# Screenshot / Downloads Search — configuration
+# Edit this file, no code changes needed for basic customization.
+# =============================================================================
+
+# Folders to watch (absolute paths). Expanduser (~) is supported.
+watch_folders:
+  - "~/Desktop/Screenshots"
+  - "~/Downloads"
+
+# Also do a one-time backfill scan of these folders on first run
+# (set to false if you only want new files going forward)
+backfill_on_first_run: true
+
+# File extensions to ignore entirely (partial downloads, system files, etc.)
+ignore_extensions:
+  - ".crdownload"
+  - ".part"
+  - ".tmp"
+  - ".ds_store"
+
+# How long (seconds) a file's size must stay unchanged before we treat it
+# as "done writing" and process it. Prevents indexing half-downloaded files.
+stability_wait_seconds: 2.0
+
+# Where local state lives
+db_path: "./data/index.lancedb"
+labels_csv: "./data/labels.csv"
+thumbnails_dir: "./data/thumbnails"
+classifier_path: "./models/classifier.joblib"
+label_encoder_path: "./models/label_encoder.joblib"
+
+# CLIP model (via open_clip). ViT-B-32 is a good CPU-friendly default.
+# Bigger/slower but more accurate: "ViT-L-14" + pretrained "laion2b_s32b_b82k"
+embedding:
+  model_name: "ViT-B-32"
+  pretrained: "laion2b_s34b_b79k"
+  device: "auto"   # auto | cpu | cuda | mps
+
+# Confidence below which the UI shows a file as "Needs review"
+classification_confidence_threshold: 0.55
+
+# API server
+api:
+  host: "127.0.0.1"
+  port: 8756
+
+# Category definitions used for (a) zero-shot bootstrap labeling and
+# (b) the fixed label set the trained classifier predicts over.
+# Add/remove/edit freely — re-run bootstrap + train after changes.
+categories:
+  - name: "Receipt / Invoice"
+    prompts:
+      - "a photo of a store receipt with prices and a total"
+      - "a screenshot of an invoice or online order confirmation"
+  - name: "Code / Terminal"
+    prompts:
+      - "a screenshot of source code in an editor"
+      - "a screenshot of a terminal or command line"
+  - name: "Chat / Messages"
+    prompts:
+      - "a screenshot of a text message or chat conversation"
+      - "a screenshot of an email inbox or email thread"
+  - name: "Social Media"
+    prompts:
+      - "a screenshot of a social media post or feed"
+      - "a meme image with bold caption text"
+  - name: "Document / Article"
+    prompts:
+      - "a scanned page of a document or article with paragraphs of text"
+      - "a screenshot of a PDF document"
+  - name: "Chart / Data"
+    prompts:
+      - "a chart, graph, or data dashboard"
+      - "a spreadsheet full of numbers"
+  - name: "UI / Design"
+    prompts:
+      - "a screenshot of a website or app user interface"
+      - "a design mockup or wireframe"
+  - name: "ID / Sensitive"
+    prompts:
+      - "a photo of an identification card, passport, or personal document"
+      - "a screenshot containing a credit card number or bank details"
+  - name: "Photo"
+    prompts:
+      - "a photograph of a person, place, or object taken with a camera"
+  - name: "Other"
+    prompts:
+      - "a miscellaneous image that does not fit another category"
