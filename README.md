@@ -162,3 +162,25 @@ config.yaml                 all tunables live here
   `pretrained` in `config.yaml` to a larger open_clip checkpoint (e.g.
   `ViT-L-14` / `laion2b_s32b_b82k`) if you have a GPU and want more accuracy
   at the cost of speed.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+### Third-Party Licenses & Acknowledgements
+
+This project relies on the following open-source libraries and tools:
+
+- **[OpenCLIP](https://github.com/mlfoundations/open_clip)** — MIT License
+- **[PyTorch](https://pytorch.org/)** — BSD-style License
+- **[Tesseract OCR](https://github.com/tesseract-ocr/tesseract)** — Apache License 2.0
+- **[LanceDB](https://github.com/lancedb/lancedb)** — Apache License 2.0
+- **[FastAPI](https://fastapi.tiangolo.com/)** — MIT License
+- **[Uvicorn](https://www.uvicorn.org/)** — BSD 3-Clause License
+- **[scikit-learn](https://scikit-learn.org/)** — BSD 3-Clause License
+- **[watchdog](https://github.com/gorakhargosh/watchdog)** — Apache License 2.0
+- **[Pillow](https://python-pillow.org/)** — HPND License (MIT-like)
+- **[pypdf](https://github.com/py-pdf/pypdf)** — BSD 3-Clause License
+- **[python-docx](https://github.com/python-openxml/python-docx)** — MIT License
+- **[PyYAML](https://pyyaml.org/)** — MIT License
+
