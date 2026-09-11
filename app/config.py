@@ -4,9 +4,8 @@ Keeping this as its own module means every other file just does:
     from app.config import CFG
 """
 from __future__ import annotations
-import os
 from pathlib import Path
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent

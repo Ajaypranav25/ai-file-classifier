@@ -19,7 +19,6 @@ low-confidence rows, and `python -m train.train_classifier` to train.
 """
 from __future__ import annotations
 import csv
-from pathlib import Path
 
 from app.config import CFG
 from app.extract import extract
