@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
 from app.config import CFG
@@ -41,11 +42,11 @@ class Handler(FileSystemEventHandler):
             log.warning(f"failed to process {path}: {e}")
 
     def on_created(self, event: FileSystemEvent):
-        if not event.is_directory:
+        if not event.is_directory and isinstance(event.src_path, str):
             self._submit(event.src_path)
 
     def on_moved(self, event: FileSystemEvent):
-        if not event.is_directory:
+        if not event.is_directory and isinstance(event.dest_path, str) and isinstance(event.src_path, str):
             self._submit(event.dest_path)
             self.store.delete_by_filepath(event.src_path)
 
@@ -60,7 +61,7 @@ def backfill(store: Store, executor: ThreadPoolExecutor):
                 executor.submit(process_file, path, store)
 
 
-def start_watcher(run_backfill: bool = True) -> Observer:
+def start_watcher(run_backfill: bool = True) -> BaseObserver:
     store = Store()
     executor = ThreadPoolExecutor(max_workers=4)
     handler = Handler(executor, store)
