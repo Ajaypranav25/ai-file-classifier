@@ -9,6 +9,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from watchdog.observers.api import BaseObserver
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
@@ -42,12 +43,15 @@ class Handler(FileSystemEventHandler):
 
     def on_created(self, event: FileSystemEvent):
         if not event.is_directory:
-            self._submit(event.src_path)
+            src_path = event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path
+            self._submit(src_path)
 
     def on_moved(self, event: FileSystemEvent):
         if not event.is_directory:
-            self._submit(event.dest_path)
-            self.store.delete_by_filepath(event.src_path)
+            dest_path = event.dest_path.decode() if isinstance(event.dest_path, bytes) else event.dest_path
+            self._submit(dest_path)
+            src_path = event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path
+            self.store.delete_by_filepath(src_path)
 
 
 def backfill(store: Store, executor: ThreadPoolExecutor):
@@ -60,7 +64,7 @@ def backfill(store: Store, executor: ThreadPoolExecutor):
                 executor.submit(process_file, path, store)
 
 
-def start_watcher(run_backfill: bool = True) -> Observer:
+def start_watcher(run_backfill: bool = True) -> BaseObserver:
     store = Store()
     executor = ThreadPoolExecutor(max_workers=4)
     handler = Handler(executor, store)
