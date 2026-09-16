@@ -11,7 +11,6 @@ Why LanceDB over FAISS/Chroma/a server-based DB:
     re-processed (renamed, re-saved) over time.
 """
 from __future__ import annotations
-import time
 from dataclasses import dataclass, asdict
 from typing import Optional
 

@@ -59,7 +59,7 @@ def process_file(path: Path, store: Store | None = None) -> dict | None:
     extracted = extract(path)
     file_id = _file_id(path)
 
-    if extracted.kind == "image":
+    if extracted.kind == "image" and extracted.raw_bytes is not None:
         vector = embedder.embed_image(extracted.raw_bytes)
         thumb = _make_thumbnail(path, file_id)
     else:
