@@ -6,6 +6,7 @@ blocks the watcher from noticing the next screenshot.
 from __future__ import annotations
 import logging
 import threading
+from typing import Any
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -42,12 +43,12 @@ class Handler(FileSystemEventHandler):
 
     def on_created(self, event: FileSystemEvent):
         if not event.is_directory:
-            self._submit(event.src_path)
+            self._submit(str(event.src_path))
 
     def on_moved(self, event: FileSystemEvent):
         if not event.is_directory:
-            self._submit(event.dest_path)
-            self.store.delete_by_filepath(event.src_path)
+            self._submit(str(event.dest_path))
+            self.store.delete_by_filepath(str(event.src_path))
 
 
 def backfill(store: Store, executor: ThreadPoolExecutor):
@@ -60,7 +61,7 @@ def backfill(store: Store, executor: ThreadPoolExecutor):
                 executor.submit(process_file, path, store)
 
 
-def start_watcher(run_backfill: bool = True) -> Observer:
+def start_watcher(run_backfill: bool = True) -> Any:
     store = Store()
     executor = ThreadPoolExecutor(max_workers=4)
     handler = Handler(executor, store)

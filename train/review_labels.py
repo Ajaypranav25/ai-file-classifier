@@ -53,7 +53,7 @@ def main():
     def conf_of(r):
         src = r.get("source", "")
         if src.startswith("zero-shot("):
-            return float(src[len("zero-shot("):-1])
+            return float(src[len("zero-shot("): -1])
         return 1.0  # user-corrected rows are treated as fully confident
 
     rows.sort(key=conf_of)
@@ -66,7 +66,7 @@ def main():
 
     changed = 0
     for i, row in enumerate(rows[: args.n]):
-        print(f"({i+1}/{min(args.n, len(rows))}) {row['filepath']}")
+        print(f"({i + 1}/{min(args.n, len(rows))}) {row['filepath']}")
         print(f"    current label: {row['category']}   ({row['source']})")
         if args.open_files:
             open_file(row["filepath"])
