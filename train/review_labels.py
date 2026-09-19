@@ -66,7 +66,7 @@ def main():
 
     changed = 0
     for i, row in enumerate(rows[: args.n]):
-        print(f"({i+1}/{min(args.n, len(rows))}) {row['filepath']}")
+        print(f"({i + 1}/{min(args.n, len(rows))}) {row['filepath']}")
         print(f"    current label: {row['category']}   ({row['source']})")
         if args.open_files:
             open_file(row["filepath"])
