@@ -97,17 +97,20 @@ def process_file(path: Path, store: Store | None = None) -> dict | None:
     }
 
 
-def wait_until_stable(path: Path, wait_seconds: float | None = None) -> bool:
+def wait_until_stable(path: Path, wait_seconds: float | None = None, max_attempts: int = 60) -> bool:
     """Polls file size until it stops changing, so we don't index a file
     that's still being written (screenshot saving, download in progress).
-    Returns False if the file disappeared before stabilizing."""
+    Returns False if the file disappeared before stabilizing or exceeded max_attempts."""
     wait_seconds = wait_seconds if wait_seconds is not None else CFG.stability_wait_seconds
     last_size = -1
-    while True:
+    attempts = 0
+    while attempts < max_attempts:
         if not path.exists():
             return False
         size = path.stat().st_size
         if size == last_size:
             return True
         last_size = size
+        attempts += 1
         time.sleep(wait_seconds)
+    return False

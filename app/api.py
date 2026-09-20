@@ -21,6 +21,11 @@ class CorrectionRequest(BaseModel):
     category: str
 
 
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.get("/api/search")
 def search(q: str = "", category: str = "All", limit: int = 60):
     store = get_store()
