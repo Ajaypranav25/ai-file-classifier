@@ -6,7 +6,7 @@ Keeping this as its own module means every other file just does:
 from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass
-import yaml
+import yaml  # type: ignore
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config.yaml"

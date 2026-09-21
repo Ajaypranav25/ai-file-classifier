@@ -28,6 +28,7 @@ def health():
 
 @app.get("/api/search")
 def search(q: str = "", category: str = "All", limit: int = 60):
+    limit = max(1, min(limit, 1000))
     store = get_store()
     results = []
     seen_ids = set()
