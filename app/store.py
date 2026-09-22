@@ -56,10 +56,7 @@ class FileRecord:
 class Store:
     def __init__(self):
         self.db = lancedb.connect(str(CFG.db_path))
-        if "files" in self.db.table_names():
-            self.table = self.db.open_table("files")
-        else:
-            self.table = self.db.create_table("files", schema=SCHEMA)
+        self.table = self.db.create_table("files", schema=SCHEMA, exist_ok=True)
 
     def upsert(self, record: FileRecord):
         # LanceDB upsert-by-key: delete existing row with this id, then add.
