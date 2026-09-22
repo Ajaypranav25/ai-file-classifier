@@ -1,5 +1,5 @@
 import unittest
-from fastapi.testclient import TestClient
+from starlette.testclient import TestClient
 from app.api import app
 
 
