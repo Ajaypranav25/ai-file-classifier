@@ -150,6 +150,21 @@ scripts/                   OS-level auto-start + setup helpers
 config.yaml                 all tunables live here
 ```
 
+## Development & Testing
+
+To ensure code quality and prevent regressions, run the following commands before submitting changes:
+
+```bash
+# Run unit tests
+python3 -m pytest tests/
+
+# Run linter
+flake8 --ignore=E501,W503 app/ tests/ train/ scripts/
+
+# Run type checker
+mypy --ignore-missing-imports app/ tests/ train/
+```
+
 ## Extending it
 
 - **New categories**: edit `config.yaml`, re-run bootstrap + train.

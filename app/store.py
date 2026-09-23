@@ -12,7 +12,7 @@ Why LanceDB over FAISS/Chroma/a server-based DB:
 """
 from __future__ import annotations
 from dataclasses import dataclass, asdict
-from typing import Optional
+from typing import Optional, Any
 
 import lancedb
 import pyarrow as pa
@@ -54,25 +54,25 @@ class FileRecord:
 
 
 class Store:
-    def __init__(self):
+    def __init__(self) -> None:
         self.db = lancedb.connect(str(CFG.db_path))
         self.table = self.db.create_table("files", schema=SCHEMA, exist_ok=True)
 
-    def upsert(self, record: FileRecord):
+    def upsert(self, record: FileRecord) -> None:
         # LanceDB upsert-by-key: delete existing row with this id, then add.
         self.table.delete(f"id = '{record.id}'")
         self.table.add([asdict(record)])
 
-    def delete_by_filepath(self, filepath: str):
+    def delete_by_filepath(self, filepath: str) -> None:
         self.table.delete(f"filepath = '{filepath}'")
 
     def search(
         self,
-        query_vector,
+        query_vector: 'Any',  # Can be list[float], numpy.ndarray, or pyarrow array
         limit: int = 40,
         category: Optional[str] = None,
         min_confidence: Optional[float] = None,
-    ):
+    ) -> list[dict]:
         q = self.table.search(query_vector).limit(limit * 3)  # overfetch, then filter
         conditions = []
         if category and category != "All":
@@ -84,7 +84,7 @@ class Store:
         results = q.to_list()
         return results[:limit]
 
-    def keyword_search(self, text: str, limit: int = 40, category: Optional[str] = None):
+    def keyword_search(self, text: str, limit: int = 40, category: Optional[str] = None) -> list[dict]:
         """Simple substring fallback search over filenames + OCR text,
         used to complement semantic search for exact tokens (e.g. an
         order number) that embeddings are bad at matching precisely."""
@@ -100,7 +100,7 @@ class Store:
             mask &= df["category"] == category
         return df[mask].sort_values("indexed_at", ascending=False).head(limit).to_dict("records")
 
-    def stats(self):
+    def stats(self) -> dict:
         df = self.table.to_pandas()
         if df.empty:
             return {"total": 0, "by_category": {}}
@@ -109,10 +109,10 @@ class Store:
             "by_category": df["category"].value_counts().to_dict(),
         }
 
-    def all_records(self):
+    def all_records(self) -> list[dict]:
         return self.table.to_pandas().to_dict("records")
 
-    def update_category(self, record_id: str, new_category: str):
+    def update_category(self, record_id: str, new_category: str) -> bool:
         df = self.table.to_pandas()
         row = df[df["id"] == record_id]
         if row.empty:
