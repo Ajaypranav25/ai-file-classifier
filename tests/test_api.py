@@ -1,5 +1,5 @@
 import unittest
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 from app.api import app
 
 
@@ -20,6 +20,24 @@ class TestAPI(unittest.TestCase):
 
         response = self.client.get("/api/search?q=test&limit=-5")
         self.assertEqual(response.status_code, 200)
+
+    def test_categories(self):
+        response = self.client.get("/api/categories")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("categories", data)
+        self.assertIn("counts", data)
+        self.assertIn("total", data)
+
+    def test_open_file_not_found(self):
+        response = self.client.get("/api/open?path=/does/not/exist/file.txt")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"detail": "File not found"})
+
+    def test_thumbnail_not_found(self):
+        response = self.client.get("/api/thumbnail/does_not_exist_id")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"detail": "No thumbnail"})
 
 
 if __name__ == "__main__":
