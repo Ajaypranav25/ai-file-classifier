@@ -52,6 +52,10 @@ def load_labeled_examples():
 
 def main():
     rows = load_labeled_examples()
+    if len(rows) == 0:
+        print("No labeled examples found. Please provide labeled examples to train the classifier.")
+        return
+
     if len(rows) < 20:
         print(f"Only {len(rows)} labeled examples found — that's thin. "
               f"The classifier will still train, but consider reviewing more "
@@ -81,6 +85,10 @@ def main():
     y_enc = encoder.fit_transform(y)
 
     n_classes = len(encoder.classes_)
+    if n_classes < 2:
+        print(f"\nOnly {n_classes} category found. The classifier requires at least 2 categories to train.")
+        return
+
     print(f"\nTraining LogisticRegression on {len(X)} examples, {n_classes} categories...")
 
     model = LogisticRegression(max_iter=2000, C=1.0, class_weight="balanced")

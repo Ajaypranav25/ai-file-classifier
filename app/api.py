@@ -89,7 +89,7 @@ def correct(req: CorrectionRequest):
     rec = next((r for r in recs if r["id"] == req.id), None)
     if rec:
         CFG.labels_csv.parent.mkdir(parents=True, exist_ok=True)
-        write_header = not CFG.labels_csv.exists()
+        write_header = not CFG.labels_csv.exists() or CFG.labels_csv.stat().st_size == 0
         with open(CFG.labels_csv, "a", newline="") as f:
             w = csv.writer(f)
             if write_header:
