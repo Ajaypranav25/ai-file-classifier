@@ -70,7 +70,12 @@ def extract(path: Path) -> Extracted:
     ext = path.suffix.lower()
 
     if ext in IMAGE_EXTS:
-        raw = path.read_bytes()
+        try:
+            raw = path.read_bytes()
+        except Exception:
+            # Fall back to filename if the image file cannot be read
+            return Extracted(kind="other", text=path.stem.replace("_", " ").replace("-", " "), raw_bytes=None)
+
         text = _ocr_image(path)
         return Extracted(kind="image", text=text, raw_bytes=raw)
 
