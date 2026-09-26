@@ -114,12 +114,12 @@ def open_file(path: str):
     system = platform.system()
     try:
         if system == "Darwin":
-            subprocess.run(["open", str(p)], check=False)
+            subprocess.run(["open", str(p)], check=True)
         elif system == "Windows":
             import os
             os.startfile(str(p))  # type: ignore
         else:
-            subprocess.run(["xdg-open", str(p)], check=False)
+            subprocess.run(["xdg-open", str(p)], check=True)
         return {"ok": True}
     except Exception as e:
         raise HTTPException(500, str(e))
