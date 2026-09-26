@@ -13,6 +13,47 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ok"})
 
+    @unittest.mock.patch("app.api.get_store")
+    @unittest.mock.patch("app.api.get_embedder")
+    def test_search_with_query(self, mock_get_embedder, mock_get_store):
+        mock_embedder = unittest.mock.MagicMock()
+        mock_embedder.embed_text.return_value = [0.1] * 512
+        mock_get_embedder.return_value = mock_embedder
+
+        mock_store = unittest.mock.MagicMock()
+        mock_store.search.return_value = [
+            {"id": "1", "category": "Test", "vector": [0.1], "_distance": 0.05}
+        ]
+        mock_store.keyword_search.return_value = [
+            {"id": "2", "category": "Test", "vector": [0.2]}
+        ]
+        mock_get_store.return_value = mock_store
+
+        response = self.client.get("/api/search?q=test query")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(len(data["results"]), 2)
+        self.assertEqual(data["results"][0]["id"], "1")
+        self.assertEqual(data["results"][0]["match"], 0.95)
+        self.assertEqual(data["results"][1]["id"], "2")
+        self.assertIsNone(data["results"][1]["match"])
+
+    @unittest.mock.patch("app.api.get_store")
+    def test_search_no_query(self, mock_get_store):
+        mock_store = unittest.mock.MagicMock()
+        mock_store.all_records.return_value = [
+            {"id": "1", "category": "CategoryA", "indexed_at": 100},
+            {"id": "2", "category": "CategoryB", "indexed_at": 200}
+        ]
+        mock_get_store.return_value = mock_store
+
+        response = self.client.get("/api/search?category=CategoryB")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["results"][0]["id"], "2")
+
     def test_search_limit_bound(self):
         # Even if limit is large, it shouldn't crash, and max results wouldn't exceed limit logic bounds
         # We can just test it doesn't 500 when limit is massive
@@ -35,10 +76,30 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"detail": "File not found"})
 
+    @unittest.mock.patch("app.api.platform.system")
+    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("pathlib.Path.exists")
+    def test_open_file_success(self, mock_exists, mock_run, mock_system):
+        mock_exists.return_value = True
+        mock_system.return_value = "Linux"  # Force the subprocess.run path
+        response = self.client.get("/api/open?path=/dummy/path.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"ok": True})
+        mock_run.assert_called_once()
+
     def test_thumbnail_not_found(self):
         response = self.client.get("/api/thumbnail/does_not_exist_id")
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"detail": "No thumbnail"})
+
+    @unittest.mock.patch("app.api.Path.exists")
+    @unittest.mock.patch("app.api.FileResponse")
+    def test_thumbnail_success(self, mock_file_response, mock_exists):
+        mock_exists.return_value = True
+        mock_file_response.return_value = {"mock": "response"}
+        response = self.client.get("/api/thumbnail/dummy_id")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"mock": "response"})
 
     @unittest.mock.patch("app.api.get_store")
     def test_correct_not_found(self, mock_get_store):
