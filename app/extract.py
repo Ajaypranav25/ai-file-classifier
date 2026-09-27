@@ -29,6 +29,7 @@ class Extracted:
 
 
 def _ocr_image(path: Path) -> str:
+    """Extracts text from an image file using Tesseract OCR. Returns an empty string on failure."""
     try:
         img = Image.open(path)
         return pytesseract.image_to_string(img).strip()
@@ -39,6 +40,7 @@ def _ocr_image(path: Path) -> str:
 
 
 def _extract_pdf(path: Path) -> str:
+    """Extracts text from the first 10 pages of a PDF file using pypdf. Returns an empty string on failure."""
     try:
         from pypdf import PdfReader
         reader = PdfReader(str(path))
@@ -51,6 +53,7 @@ def _extract_pdf(path: Path) -> str:
 
 
 def _extract_docx(path: Path) -> str:
+    """Extracts paragraph text from a Word document using python-docx. Returns an empty string on failure."""
     try:
         import docx
         d = docx.Document(str(path))
@@ -60,6 +63,7 @@ def _extract_docx(path: Path) -> str:
 
 
 def _extract_plain_text(path: Path) -> str:
+    """Reads up to 20,000 characters from a plain text file. Returns an empty string on failure."""
     try:
         return path.read_text(errors="ignore")[:20000]
     except Exception:

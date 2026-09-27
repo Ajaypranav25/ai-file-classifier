@@ -22,12 +22,12 @@ class CorrectionRequest(BaseModel):
 
 
 @app.get("/api/health")
-def health():
+def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @app.get("/api/search")
-def search(q: str = "", category: str = "All", limit: int = 60):
+def search(q: str = "", category: str = "All", limit: int = 60) -> dict:
     limit = max(1, min(limit, 1000))
     store = get_store()
     results = []
@@ -64,7 +64,7 @@ def search(q: str = "", category: str = "All", limit: int = 60):
 
 
 @app.get("/api/categories")
-def categories():
+def categories() -> dict:
     store = get_store()
     stats = store.stats()
     return {
@@ -75,7 +75,7 @@ def categories():
 
 
 @app.post("/api/correct")
-def correct(req: CorrectionRequest):
+def correct(req: CorrectionRequest) -> dict:
     store = get_store()
     if req.category not in CFG.category_names:
         raise HTTPException(400, f"Unknown category: {req.category}")
@@ -99,7 +99,7 @@ def correct(req: CorrectionRequest):
 
 
 @app.post("/api/reload-classifier")
-def reload_classifier():
+def reload_classifier() -> dict:
     """Call after running train/train_classifier.py to hot-swap the model
     into the already-running server without restarting it."""
     get_classifier().reload()
@@ -107,7 +107,7 @@ def reload_classifier():
 
 
 @app.get("/api/open")
-def open_file(path: str):
+def open_file(path: str) -> dict:
     p = Path(path)
     if not p.exists():
         raise HTTPException(404, "File not found")
@@ -126,7 +126,7 @@ def open_file(path: str):
 
 
 @app.get("/api/thumbnail/{file_id}")
-def thumbnail(file_id: str):
+def thumbnail(file_id: str) -> FileResponse:
     path = CFG.thumbnails_dir / f"{file_id}.jpg"
     if not path.exists():
         raise HTTPException(404, "No thumbnail")

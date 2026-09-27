@@ -79,6 +79,30 @@ class TestExtract(unittest.TestCase):
         self.assertIsNone(result.raw_bytes)
         mock_extract_docx.assert_called_once_with(path)
 
+    def test_ocr_image_error(self):
+        # Pass a missing file to test exception handling
+        path = Path("does_not_exist.png")
+        from app.extract import _ocr_image
+        self.assertEqual(_ocr_image(path), "")
+
+    def test_extract_pdf_error(self):
+        # Pass a missing file to test exception handling
+        path = Path("does_not_exist.pdf")
+        from app.extract import _extract_pdf
+        self.assertEqual(_extract_pdf(path), "")
+
+    def test_extract_docx_error(self):
+        # Pass a missing file to test exception handling
+        path = Path("does_not_exist.docx")
+        from app.extract import _extract_docx
+        self.assertEqual(_extract_docx(path), "")
+
+    def test_extract_plain_text_error(self):
+        # Pass a missing file to test exception handling
+        path = Path("does_not_exist.txt")
+        from app.extract import _extract_plain_text
+        self.assertEqual(_extract_plain_text(path), "")
+
 
 if __name__ == "__main__":
     unittest.main()
