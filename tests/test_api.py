@@ -127,6 +127,40 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"ok": True, "trained": True})
         mock_classifier.reload.assert_called_once()
 
+    @unittest.mock.patch("app.api.get_store")
+    def test_correct_success_writes_csv(self, mock_get_store):
+        mock_store = unittest.mock.MagicMock()
+        mock_store.update_category.return_value = True
+        mock_store.all_records.return_value = [
+            {"id": "valid_id", "filepath": "/tmp/test.png"}
+        ]
+        mock_get_store.return_value = mock_store
+
+        from app.config import CFG
+        valid_cat = CFG.category_names[0]
+
+        import tempfile
+        import os
+        from pathlib import Path
+
+        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as f:
+            f.close()
+            original_csv = CFG.labels_csv
+            CFG.labels_csv = Path(f.name)
+
+            try:
+                response = self.client.post("/api/correct", json={"id": "valid_id", "category": valid_cat})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json(), {"ok": True})
+
+                with open(CFG.labels_csv, "r") as reader:
+                    content = reader.read()
+                    self.assertIn("filepath,category,source", content)
+                    self.assertIn(f"/tmp/test.png,{valid_cat},user-corrected", content)
+            finally:
+                CFG.labels_csv = original_csv
+                os.remove(f.name)
+
 
 if __name__ == "__main__":
     unittest.main()

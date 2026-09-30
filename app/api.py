@@ -1,4 +1,5 @@
 from __future__ import annotations
+import csv
 import platform
 import subprocess
 from pathlib import Path
@@ -84,7 +85,6 @@ def correct(req: CorrectionRequest) -> dict:
         raise HTTPException(404, "Record not found")
     # Append to the labels CSV so the next `train_classifier.py` run
     # picks up this correction as ground truth.
-    import csv
     recs = store.all_records()
     rec = next((r for r in recs if r["id"] == req.id), None)
     if rec:
