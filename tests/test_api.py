@@ -87,6 +87,39 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"ok": True})
         mock_run.assert_called_once()
 
+    @unittest.mock.patch("app.api.platform.system")
+    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("pathlib.Path.exists")
+    def test_open_file_darwin(self, mock_exists, mock_run, mock_system):
+        mock_exists.return_value = True
+        mock_system.return_value = "Darwin"
+        response = self.client.get("/api/open?path=/dummy/path.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"ok": True})
+        mock_run.assert_called_once_with(["open", "/dummy/path.txt"], check=True)
+
+    @unittest.mock.patch("app.api.platform.system")
+    @unittest.mock.patch("os.startfile", create=True)
+    @unittest.mock.patch("pathlib.Path.exists")
+    def test_open_file_windows(self, mock_exists, mock_startfile, mock_system):
+        mock_exists.return_value = True
+        mock_system.return_value = "Windows"
+        response = self.client.get("/api/open?path=/dummy/path.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"ok": True})
+        mock_startfile.assert_called_once_with("/dummy/path.txt")
+
+    @unittest.mock.patch("app.api.platform.system")
+    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("pathlib.Path.exists")
+    def test_open_file_exception(self, mock_exists, mock_run, mock_system):
+        mock_exists.return_value = True
+        mock_system.return_value = "Linux"
+        mock_run.side_effect = Exception("Test error")
+        response = self.client.get("/api/open?path=/dummy/path.txt")
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), {"detail": "Test error"})
+
     def test_thumbnail_not_found(self):
         response = self.client.get("/api/thumbnail/does_not_exist_id")
         self.assertEqual(response.status_code, 404)

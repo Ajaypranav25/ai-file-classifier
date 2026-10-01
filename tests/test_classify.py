@@ -7,6 +7,38 @@ from app.config import CFG, Category
 
 
 class TestClassify(unittest.TestCase):
+    @unittest.mock.patch("app.classify.get_embedder")
+    def test_category_centroids(self, mock_get_embedder):
+        original_categories = CFG.categories
+        CFG.categories = [
+            Category(name="Cat1", prompts=["prompt 1"]),
+            Category(name="Cat2", prompts=["prompt 2"])
+        ]
+
+        # Since it uses @functools.lru_cache we need to clear it so it picks up mocked values
+        from app.classify import _category_centroids
+        _category_centroids.cache_clear()
+
+        mock_embedder = unittest.mock.MagicMock()
+        mock_get_embedder.return_value = mock_embedder
+
+        # Mock embed_texts to return vectors where we know the average and normalized output
+        # For Cat1
+        vec1 = np.array([[2.0, 0.0]])
+        # For Cat2
+        vec2 = np.array([[0.0, 3.0]])
+        mock_embedder.embed_texts.side_effect = [vec1, vec2]
+
+        try:
+            centroids = _category_centroids()
+            self.assertEqual(centroids.shape, (2, 2))
+            # Should be normalized
+            self.assertTrue(np.allclose(centroids[0], [1.0, 0.0]))
+            self.assertTrue(np.allclose(centroids[1], [0.0, 1.0]))
+        finally:
+            CFG.categories = original_categories
+            _category_centroids.cache_clear()
+
     @unittest.mock.patch("app.classify._category_centroids")
     def test_zero_shot_classify(self, mock_centroids):
         # We need to mock CFG.categories to match our mocked centroids
