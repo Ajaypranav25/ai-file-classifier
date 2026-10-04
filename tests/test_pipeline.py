@@ -166,6 +166,49 @@ class TestPipeline(unittest.TestCase):
         res = process_file(Path("/dummy.txt"))
         self.assertIsNone(res)
 
+    def test_make_thumbnail_exception(self):
+        from app.pipeline import _make_thumbnail
+        with unittest.mock.patch("PIL.Image.open") as mock_open:
+            mock_open.side_effect = Exception("test error")
+            res = _make_thumbnail(Path("dummy.png"), "123")
+            self.assertEqual(res, "")
+
+    def test_make_thumbnail_success(self):
+        from app.pipeline import _make_thumbnail
+        with unittest.mock.patch("PIL.Image.open") as mock_open:
+            mock_img = unittest.mock.MagicMock()
+            mock_open.return_value.convert.return_value = mock_img
+            with unittest.mock.patch("app.pipeline.CFG") as mock_cfg:
+                mock_cfg.thumbnails_dir = Path("/mock_thumbnails")
+                res = _make_thumbnail(Path("dummy.png"), "123")
+                self.assertEqual(res, "/mock_thumbnails/123.jpg")
+                mock_img.thumbnail.assert_called_once()
+                mock_img.save.assert_called_once()
+
+    @unittest.mock.patch("app.pipeline.get_classifier")
+    @unittest.mock.patch("app.pipeline.get_embedder")
+    @unittest.mock.patch("app.pipeline.extract")
+    @unittest.mock.patch("app.pipeline.is_ignored")
+    @unittest.mock.patch("pathlib.Path.exists")
+    @unittest.mock.patch("pathlib.Path.is_file")
+    def test_process_file_image_no_bytes(self, mock_is_file, mock_exists, mock_is_ignored, mock_extract, mock_embed, mock_classify):
+        mock_exists.return_value = True
+        mock_is_file.return_value = True
+        mock_is_ignored.return_value = False
+
+        mock_extracted = unittest.mock.MagicMock()
+        mock_extracted.kind = "image"
+        mock_extracted.raw_bytes = None
+        mock_extract.return_value = mock_extracted
+
+        store = unittest.mock.MagicMock()
+
+        from app.pipeline import process_file
+        with unittest.mock.patch("pathlib.Path.stat") as mock_stat:
+            mock_stat.return_value.st_mtime = 123.4
+            res = process_file(Path("/dummy.png"), store=store)
+        self.assertIsNone(res)
+
 
 if __name__ == "__main__":
     unittest.main()
