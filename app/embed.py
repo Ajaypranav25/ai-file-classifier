@@ -66,7 +66,7 @@ class ClipEmbedder:
     @torch.no_grad()
     def embed_texts(self, texts: list[str]) -> np.ndarray:
         """Batched version, used for building category prompt centroids."""
-        cleaned = [(t.strip() or " ")[:2000] for t in texts]
+        cleaned = [((t or "").strip() or " ")[:2000] for t in texts]
         tokens = self.tokenizer(cleaned).to(self.device)
         feats = self.model.encode_text(tokens)
         feats /= feats.norm(dim=-1, keepdim=True)

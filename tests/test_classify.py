@@ -119,6 +119,16 @@ class TestClassify(unittest.TestCase):
         self.assertEqual(source, "zero-shot")
         mock_zsc.assert_called_once_with(emb)
 
+    def test_classifier_reload(self):
+        c = Classifier()
+        c.reload()
+
+    def test_get_classifier_singleton(self):
+        from app.classify import get_classifier
+        c1 = get_classifier()
+        c2 = get_classifier()
+        self.assertIs(c1, c2)
+
 
 if __name__ == "__main__":
     unittest.main()
