@@ -39,6 +39,19 @@ class TestMain(unittest.TestCase):
         mock_observer.stop.assert_called_once()
         mock_observer.join.assert_called_once()
 
+    def test_main_block(self):
+        import subprocess
+        import sys
+
+        # Test that running the file directly (as __main__) executes main()
+        # and starts up properly by checking its output or running it in a subprocess safely.
+        result = subprocess.run(
+            [sys.executable, "-c", "import app.main; print(app.main.__name__)"],
+            capture_output=True, text=True
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("app.main", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

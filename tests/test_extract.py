@@ -103,6 +103,58 @@ class TestExtract(unittest.TestCase):
         from app.extract import _extract_plain_text
         self.assertEqual(_extract_plain_text(path), "")
 
+    def test_extract_image_read_error(self):
+        path = Path("does_not_exist_but_has_extension.png")
+        result = extract(path)
+        self.assertEqual(result.kind, "other")
+        self.assertEqual(result.text, "does not exist but has extension")
+        self.assertIsNone(result.raw_bytes)
+
+    def test_extract_pdf_valid(self):
+        import pypdf
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as f:
+            pdf_path = Path(f.name)
+            writer = pypdf.PdfWriter()
+            # empty page is enough to pass read
+            writer.add_blank_page(width=100, height=100)
+            writer.write(str(pdf_path))
+        try:
+            from app.extract import _extract_pdf
+            res = _extract_pdf(pdf_path)
+            self.assertEqual(res, "")
+        finally:
+            os.remove(pdf_path)
+
+    def test_extract_docx_valid(self):
+        import docx
+        with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as f:
+            docx_path = Path(f.name)
+            doc = docx.Document()
+            doc.add_paragraph("Hello docx")
+            doc.save(str(docx_path))
+        try:
+            from app.extract import _extract_docx
+            res = _extract_docx(docx_path)
+            self.assertEqual(res, "Hello docx")
+        finally:
+            os.remove(docx_path)
+
+    @unittest.mock.patch("pytesseract.image_to_string")
+    def test_ocr_image_success(self, mock_image_to_string):
+        mock_image_to_string.return_value = "extracted text  "
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+            f.write(b"dummy image data")
+            f.flush()
+            path = Path(f.name)
+
+        try:
+            with unittest.mock.patch("PIL.Image.open"):
+                from app.extract import _ocr_image
+                res = _ocr_image(path)
+                self.assertEqual(res, "extracted text")
+        finally:
+            os.remove(path)
+
 
 if __name__ == "__main__":
     unittest.main()
