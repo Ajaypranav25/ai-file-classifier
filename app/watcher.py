@@ -64,7 +64,7 @@ def backfill(store: Store, executor: ThreadPoolExecutor):
                 executor.submit(process_file, path, store)
 
 
-def start_watcher(run_backfill: bool = True) -> 'BaseObserver':
+def start_watcher(run_backfill: bool = True) -> tuple['BaseObserver', ThreadPoolExecutor]:
     store = Store()
     executor = ThreadPoolExecutor(max_workers=4)
     handler = Handler(executor, store)
@@ -80,4 +80,4 @@ def start_watcher(run_backfill: bool = True) -> 'BaseObserver':
     if run_backfill and CFG.backfill_on_first_run:
         threading.Thread(target=backfill, args=(store, executor), daemon=True).start()
 
-    return observer
+    return observer, executor

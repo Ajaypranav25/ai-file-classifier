@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(na
 def main():
     log = logging.getLogger("main")
     log.info("starting folder watcher...")
-    observer = start_watcher()
+    observer, executor = start_watcher()
 
     log.info(f"starting API + UI at http://{CFG.api_host}:{CFG.api_port}")
     try:
@@ -24,6 +24,7 @@ def main():
     finally:
         observer.stop()
         observer.join()
+        executor.shutdown(wait=False)
 
 
 if __name__ == "__main__":

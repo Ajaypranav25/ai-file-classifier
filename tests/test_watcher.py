@@ -164,9 +164,10 @@ class TestWatcher(unittest.TestCase):
             mock_thread.return_value = mock_thread_instance
 
             from app.watcher import start_watcher
-            observer = start_watcher(run_backfill=True)
+            observer, executor = start_watcher(run_backfill=True)
 
             self.assertEqual(observer, mock_obs_instance)
+            self.assertIsInstance(executor, ThreadPoolExecutor)
             mock_obs_instance.schedule.assert_called_once()
             mock_obs_instance.start.assert_called_once()
             mock_mkdir.assert_called_once()

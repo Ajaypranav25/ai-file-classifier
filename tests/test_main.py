@@ -10,7 +10,8 @@ class TestMain(unittest.TestCase):
     @patch("app.main.uvicorn.run")
     def test_main_success(self, mock_uvicorn_run, mock_start_watcher):
         mock_observer = MagicMock()
-        mock_start_watcher.return_value = mock_observer
+        mock_executor = MagicMock()
+        mock_start_watcher.return_value = (mock_observer, mock_executor)
 
         main()
 
@@ -20,12 +21,14 @@ class TestMain(unittest.TestCase):
         )
         mock_observer.stop.assert_called_once()
         mock_observer.join.assert_called_once()
+        mock_executor.shutdown.assert_called_once_with(wait=False)
 
     @patch("app.main.start_watcher")
     @patch("app.main.uvicorn.run")
     def test_main_exception_in_uvicorn(self, mock_uvicorn_run, mock_start_watcher):
         mock_observer = MagicMock()
-        mock_start_watcher.return_value = mock_observer
+        mock_executor = MagicMock()
+        mock_start_watcher.return_value = (mock_observer, mock_executor)
 
         mock_uvicorn_run.side_effect = Exception("Test exception")
 
@@ -38,6 +41,7 @@ class TestMain(unittest.TestCase):
         )
         mock_observer.stop.assert_called_once()
         mock_observer.join.assert_called_once()
+        mock_executor.shutdown.assert_called_once_with(wait=False)
 
     def test_main_block(self):
         import subprocess
