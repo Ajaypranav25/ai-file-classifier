@@ -31,8 +31,8 @@ class Extracted:
 def _ocr_image(path: Path) -> str:
     """Extracts text from an image file using Tesseract OCR. Returns an empty string on failure."""
     try:
-        img = Image.open(path)
-        return pytesseract.image_to_string(img).strip()
+        with Image.open(path) as img:
+            return pytesseract.image_to_string(img).strip()
     except Exception:
         # OCR is best-effort — a missing tesseract binary or a corrupt
         # image should not crash the pipeline, just yield no OCR text.

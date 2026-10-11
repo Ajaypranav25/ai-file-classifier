@@ -177,7 +177,7 @@ class TestPipeline(unittest.TestCase):
         from app.pipeline import _make_thumbnail
         with unittest.mock.patch("PIL.Image.open") as mock_open:
             mock_img = unittest.mock.MagicMock()
-            mock_open.return_value.convert.return_value = mock_img
+            mock_open.return_value.__enter__.return_value.convert.return_value = mock_img
             with unittest.mock.patch("app.pipeline.CFG") as mock_cfg:
                 mock_cfg.thumbnails_dir = Path("/mock_thumbnails")
                 res = _make_thumbnail(Path("dummy.png"), "123")

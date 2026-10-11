@@ -148,7 +148,8 @@ class TestExtract(unittest.TestCase):
             path = Path(f.name)
 
         try:
-            with unittest.mock.patch("PIL.Image.open"):
+            with unittest.mock.patch("PIL.Image.open") as mock_open:
+                mock_open.return_value.__enter__.return_value = unittest.mock.MagicMock()
                 from app.extract import _ocr_image
                 res = _ocr_image(path)
                 self.assertEqual(res, "extracted text")

@@ -27,10 +27,11 @@ def _file_id(path: Path) -> str:
 
 def _make_thumbnail(path: Path, file_id: str) -> str:
     try:
-        img = Image.open(path).convert("RGB")
-        img.thumbnail(THUMB_SIZE)
+        with Image.open(path) as img:
+            rgb_img = img.convert("RGB")
+        rgb_img.thumbnail(THUMB_SIZE)
         out = CFG.thumbnails_dir / f"{file_id}.jpg"
-        img.save(out, "JPEG", quality=82)
+        rgb_img.save(out, "JPEG", quality=82)
         return str(out)
     except Exception:
         return ""
