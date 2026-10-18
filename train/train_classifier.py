@@ -115,5 +115,5 @@ def main():
     print(f"  curl -X POST http://{CFG.api_host}:{CFG.api_port}/api/reload-classifier")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
