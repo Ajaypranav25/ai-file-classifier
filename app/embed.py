@@ -48,8 +48,8 @@ class ClipEmbedder:
     @torch.no_grad()
     def embed_image(self, image_bytes: bytes) -> np.ndarray:
         with Image.open(io.BytesIO(image_bytes)) as img:
-            img_rgb = img.convert("RGB")
-            tensor = self.preprocess(img_rgb).unsqueeze(0).to(self.device)
+            with img.convert("RGB") as img_rgb:
+                tensor = self.preprocess(img_rgb).unsqueeze(0).to(self.device)
         feats = self.model.encode_image(tensor)
         feats /= feats.norm(dim=-1, keepdim=True)
         return feats.squeeze(0).cpu().numpy().astype("float32")
