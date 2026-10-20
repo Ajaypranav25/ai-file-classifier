@@ -130,5 +130,5 @@ class TestClassify(unittest.TestCase):
         self.assertIs(c1, c2)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

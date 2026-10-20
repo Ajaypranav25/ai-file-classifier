@@ -178,5 +178,5 @@ class TestWatcher(unittest.TestCase):
             CFG.backfill_on_first_run = original_backfill
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

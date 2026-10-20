@@ -21,5 +21,5 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(path, Path("~/home_dir_path").expanduser())
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

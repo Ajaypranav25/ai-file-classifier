@@ -96,5 +96,5 @@ class TestReviewLabels(unittest.TestCase):
         self.assertTrue(mock_open_file.called)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()
