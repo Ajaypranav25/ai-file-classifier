@@ -221,5 +221,5 @@ class TestStore(unittest.TestCase):
             app.store._store_singleton = original
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

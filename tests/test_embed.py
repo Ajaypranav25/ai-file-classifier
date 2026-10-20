@@ -66,5 +66,5 @@ class TestEmbedder(unittest.TestCase):
         self.assertEqual(vecs.shape, (3, 512))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

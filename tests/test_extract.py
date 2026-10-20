@@ -157,5 +157,5 @@ class TestExtract(unittest.TestCase):
             os.remove(path)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()

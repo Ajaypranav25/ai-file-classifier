@@ -115,5 +115,5 @@ class TestBootstrapLabels(unittest.TestCase):
                 CFG.watch_folders = original_folders
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()
