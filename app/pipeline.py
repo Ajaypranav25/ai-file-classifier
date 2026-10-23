@@ -4,6 +4,7 @@ script both call. Keeping it here (rather than inline in watcher.py) means
 train/bootstrap_labels.py can also reuse the exact same extract+embed logic.
 """
 from __future__ import annotations
+import logging
 import hashlib
 import time
 from pathlib import Path
@@ -15,6 +16,8 @@ from app.extract import extract
 from app.embed import get_embedder
 from app.classify import get_classifier
 from app.store import Store, FileRecord
+
+log = logging.getLogger(__name__)
 
 THUMB_SIZE = (320, 320)
 
@@ -33,7 +36,8 @@ def _make_thumbnail(path: Path, file_id: str) -> str:
                 out = CFG.thumbnails_dir / f"{file_id}.jpg"
                 rgb_img.save(out, "JPEG", quality=82)
                 return str(out)
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         return ""
 
 

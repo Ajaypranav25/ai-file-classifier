@@ -13,12 +13,15 @@ Controls: type a category number to relabel it, Enter to accept the
 suggested label as-is, 's' to skip, 'q' to save and quit.
 """
 from __future__ import annotations
+import logging
 import argparse
 import csv
 import subprocess
 import platform
 
 from app.config import CFG
+
+log = logging.getLogger(__name__)
 
 
 def open_file(path: str):
@@ -31,7 +34,8 @@ def open_file(path: str):
             os.startfile(path)  # type: ignore
         else:
             subprocess.run(["xdg-open", path], check=False)
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         pass
 
 

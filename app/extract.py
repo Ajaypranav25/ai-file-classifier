@@ -9,11 +9,14 @@ Keeping extraction separate from embedding/classification means adding a
 new file type later (e.g. .pptx) only touches this one file.
 """
 from __future__ import annotations
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
 from PIL import Image
 import pytesseract
+
+log = logging.getLogger(__name__)
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff", ".gif", ".heic"}
 PDF_EXTS = {".pdf"}
@@ -33,7 +36,8 @@ def _ocr_image(path: Path) -> str:
     try:
         with Image.open(path) as img:
             return pytesseract.image_to_string(img).strip()
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         # OCR is best-effort — a missing tesseract binary or a corrupt
         # image should not crash the pipeline, just yield no OCR text.
         return ""
@@ -48,7 +52,8 @@ def _extract_pdf(path: Path) -> str:
         for page in reader.pages[:10]:  # cap for speed on huge PDFs
             chunks.append(page.extract_text() or "")
         return "\n".join(chunks).strip()
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         return ""
 
 
@@ -58,7 +63,8 @@ def _extract_docx(path: Path) -> str:
         import docx
         d = docx.Document(str(path))
         return "\n".join(p.text for p in d.paragraphs).strip()
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         return ""
 
 
@@ -66,7 +72,8 @@ def _extract_plain_text(path: Path) -> str:
     """Reads up to 20,000 characters from a plain text file. Returns an empty string on failure."""
     try:
         return path.read_text(errors="ignore")[:20000]
-    except Exception:
+    except Exception as e:
+        log.debug(f"Exception: {e}")
         return ""
 
 
@@ -76,7 +83,8 @@ def extract(path: Path) -> Extracted:
     if ext in IMAGE_EXTS:
         try:
             raw = path.read_bytes()
-        except Exception:
+        except Exception as e:
+            log.debug(f"Exception: {e}")
             # Fall back to filename if the image file cannot be read
             return Extracted(kind="other", text=path.stem.replace("_", " ").replace("-", " "), raw_bytes=None)
 
