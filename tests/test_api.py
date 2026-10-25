@@ -55,13 +55,13 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data["results"][0]["id"], "2")
 
     def test_search_limit_bound(self):
-        # Even if limit is large, it shouldn't crash, and max results wouldn't exceed limit logic bounds
-        # We can just test it doesn't 500 when limit is massive
+        # The limit is bounded between 1 and 1000 via FastAPI Query validation
+        # Out of bounds should return 422 Unprocessable Entity
         response = self.client.get("/api/search?q=test&limit=9999")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 422)
 
         response = self.client.get("/api/search?q=test&limit=-5")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 422)
 
     def test_categories(self):
         response = self.client.get("/api/categories")
