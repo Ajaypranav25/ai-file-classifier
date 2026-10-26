@@ -4,7 +4,9 @@ import platform
 import subprocess
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from typing import Annotated
+
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -28,8 +30,7 @@ def health() -> dict[str, str]:
 
 
 @app.get("/api/search")
-def search(q: str = "", category: str = "All", limit: int = 60) -> dict:
-    limit = max(1, min(limit, 1000))
+def search(q: str = "", category: str = "All", limit: Annotated[int, Query(ge=1, le=1000)] = 60) -> dict:
     store = get_store()
     results = []
     seen_ids = set()
