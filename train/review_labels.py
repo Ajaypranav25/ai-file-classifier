@@ -16,24 +16,16 @@ from __future__ import annotations
 import logging
 import argparse
 import csv
-import subprocess
-import platform
 
 from app.config import CFG
+from app.utils import open_file_locally
 
 log = logging.getLogger(__name__)
 
 
 def open_file(path: str):
-    system = platform.system()
     try:
-        if system == "Darwin":
-            subprocess.run(["open", path], check=False)
-        elif system == "Windows":
-            import os
-            os.startfile(path)  # type: ignore
-        else:
-            subprocess.run(["xdg-open", path], check=False)
+        open_file_locally(path, check=False)
     except Exception as e:
         log.debug(f"Exception: {e}")
         pass

@@ -4,12 +4,15 @@ import platform
 import subprocess
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from typing import Annotated
+
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.config import CFG
+from app.utils import open_file_locally
 from app.embed import get_embedder
 from app.classify import get_classifier
 from app.store import get_store
@@ -28,8 +31,11 @@ def health() -> dict[str, str]:
 
 
 @app.get("/api/search")
-def search(q: str = "", category: str = "All", limit: int = 60) -> dict:
-    limit = max(1, min(limit, 1000))
+def search(
+    q: str = "",
+    category: str = "All",
+    limit: Annotated[int, Query(ge=1, le=1000)] = 60
+) -> dict:
     store = get_store()
     results = []
     seen_ids = set()
@@ -111,15 +117,8 @@ def open_file(path: str) -> dict:
     p = Path(path)
     if not p.exists():
         raise HTTPException(404, "File not found")
-    system = platform.system()
     try:
-        if system == "Darwin":
-            subprocess.run(["open", str(p)], check=True)
-        elif system == "Windows":
-            import os
-            os.startfile(str(p))  # type: ignore
-        else:
-            subprocess.run(["xdg-open", str(p)], check=True)
+        open_file_locally(p, check=True)
         return {"ok": True}
     except Exception as e:
         raise HTTPException(500, str(e))
