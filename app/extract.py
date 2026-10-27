@@ -37,7 +37,7 @@ def _ocr_image(path: Path) -> str:
         with Image.open(path) as img:
             return pytesseract.image_to_string(img).strip()
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         # OCR is best-effort — a missing tesseract binary or a corrupt
         # image should not crash the pipeline, just yield no OCR text.
         return ""
@@ -53,7 +53,7 @@ def _extract_pdf(path: Path) -> str:
             chunks.append(page.extract_text() or "")
         return "\n".join(chunks).strip()
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         return ""
 
 
@@ -64,7 +64,7 @@ def _extract_docx(path: Path) -> str:
         d = docx.Document(str(path))
         return "\n".join(p.text for p in d.paragraphs).strip()
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         return ""
 
 
@@ -73,7 +73,7 @@ def _extract_plain_text(path: Path) -> str:
     try:
         return path.read_text(errors="ignore")[:20000]
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         return ""
 
 
@@ -84,7 +84,7 @@ def extract(path: Path) -> Extracted:
         try:
             raw = path.read_bytes()
         except Exception as e:
-            log.debug(f"Exception: {e}")
+            log.debug(f"Exception: {e}", exc_info=True)
             # Fall back to filename if the image file cannot be read
             return Extracted(kind="other", text=path.stem.replace("_", " ").replace("-", " "), raw_bytes=None)
 

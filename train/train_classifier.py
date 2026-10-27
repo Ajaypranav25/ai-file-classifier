@@ -21,6 +21,7 @@ Usage:
     python -m train.train_classifier
 """
 from __future__ import annotations
+
 import csv
 from pathlib import Path
 
@@ -33,6 +34,8 @@ from sklearn.model_selection import cross_val_score
 from app.config import CFG
 from app.extract import extract
 from app.embed import get_embedder
+import logging
+log = logging.getLogger(__name__)
 
 
 def load_labeled_examples():
@@ -76,7 +79,7 @@ def main():
             X.append(vec)
             y.append(row["category"])
         except Exception as e:
-            print(f"  ! skipped {path.name}: {e}")
+            log.warning(f"skipped {path.name}: {e}", exc_info=True)
         if i % 25 == 0:
             print(f"  ...{i}/{len(rows)}")
 
@@ -86,10 +89,12 @@ def main():
 
     n_classes = len(encoder.classes_)
     if n_classes < 2:
-        print(f"\nOnly {n_classes} category found. The classifier requires at least 2 categories to train.")
+        print(
+            f"\nOnly {n_classes} category found. The classifier requires at least 2 categories to train.")
         return
 
-    print(f"\nTraining LogisticRegression on {len(X)} examples, {n_classes} categories...")
+    print(
+        f"\nTraining LogisticRegression on {len(X)} examples, {n_classes} categories...")
 
     model = LogisticRegression(max_iter=2000, C=1.0, class_weight="balanced")
 
@@ -97,7 +102,8 @@ def main():
     min_class_count = min(np.bincount(y_enc))
     if min_class_count >= 5:
         scores = cross_val_score(model, X, y_enc, cv=5)
-        print(f"Cross-val accuracy: {scores.mean():.3f} (+/- {scores.std():.3f})")
+        print(
+            f"Cross-val accuracy: {scores.mean():.3f} (+/- {scores.std():.3f})")
     else:
         print(f"(skipping cross-validation — smallest category has only "
               f"{min_class_count} examples; label a few more of those for a "
@@ -112,7 +118,8 @@ def main():
     print(f"\nSaved classifier -> {CFG.classifier_path}")
     print(f"Saved label encoder -> {CFG.label_encoder_path}")
     print("\nIf the app server is already running, hot-reload the new model with:")
-    print(f"  curl -X POST http://{CFG.api_host}:{CFG.api_port}/api/reload-classifier")
+    print(
+        f"  curl -X POST http://{CFG.api_host}:{CFG.api_port}/api/reload-classifier")
 
 
 if __name__ == "__main__":  # pragma: no cover

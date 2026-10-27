@@ -42,7 +42,7 @@ class Handler(FileSystemEventHandler):
             if result:
                 log.info(f"indexed {result['filename']} -> {result['category']} ({result['confidence']:.2f})")
         except Exception as e:
-            log.warning(f"failed to process {path}: {e}")
+            log.warning(f"failed to process {path}: {e}", exc_info=True)
 
     def on_created(self, event: FileSystemEvent):
         if not event.is_directory:
