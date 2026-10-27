@@ -18,6 +18,7 @@ Then run `python -m train.review_labels` to quickly correct the
 low-confidence rows, and `python -m train.train_classifier` to train.
 """
 from __future__ import annotations
+
 import csv
 
 from app.config import CFG
@@ -25,6 +26,8 @@ from app.extract import extract
 from app.embed import get_embedder
 from app.classify import _zero_shot_classify
 from app.pipeline import is_ignored
+import logging
+log = logging.getLogger(__name__)
 
 
 def iter_watch_folder_files():
@@ -54,7 +57,7 @@ def main():
             category, confidence = _zero_shot_classify(vec)
             rows.append((str(path.resolve()), category, round(confidence, 4)))
         except Exception as e:
-            print(f"  ! skipped {path.name}: {e}")
+            log.warning(f"skipped {path.name}: {e}", exc_info=True)
 
         if i % 25 == 0:
             print(f"  ...{i}/{len(files)}")

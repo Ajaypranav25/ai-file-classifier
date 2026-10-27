@@ -27,7 +27,7 @@ def open_file(path: str):
     try:
         open_file_locally(path, check=False)
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         pass
 
 

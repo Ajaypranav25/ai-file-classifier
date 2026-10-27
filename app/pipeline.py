@@ -37,7 +37,7 @@ def _make_thumbnail(path: Path, file_id: str) -> str:
                 rgb_img.save(out, "JPEG", quality=82)
                 return str(out)
     except Exception as e:
-        log.debug(f"Exception: {e}")
+        log.debug(f"Exception: {e}", exc_info=True)
         return ""
 
 

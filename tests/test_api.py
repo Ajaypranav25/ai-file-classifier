@@ -76,8 +76,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"detail": "File not found"})
 
-    @unittest.mock.patch("app.api.platform.system")
-    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("app.utils.platform.system")
+    @unittest.mock.patch("app.utils.subprocess.run")
     @unittest.mock.patch("pathlib.Path.exists")
     def test_open_file_success(self, mock_exists, mock_run, mock_system):
         mock_exists.return_value = True
@@ -87,8 +87,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"ok": True})
         mock_run.assert_called_once()
 
-    @unittest.mock.patch("app.api.platform.system")
-    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("app.utils.platform.system")
+    @unittest.mock.patch("app.utils.subprocess.run")
     @unittest.mock.patch("pathlib.Path.exists")
     def test_open_file_darwin(self, mock_exists, mock_run, mock_system):
         mock_exists.return_value = True
@@ -98,7 +98,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"ok": True})
         mock_run.assert_called_once_with(["open", "/dummy/path.txt"], check=True)
 
-    @unittest.mock.patch("app.api.platform.system")
+    @unittest.mock.patch("app.utils.platform.system")
     @unittest.mock.patch("os.startfile", create=True)
     @unittest.mock.patch("pathlib.Path.exists")
     def test_open_file_windows(self, mock_exists, mock_startfile, mock_system):
@@ -109,8 +109,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"ok": True})
         mock_startfile.assert_called_once_with("/dummy/path.txt")
 
-    @unittest.mock.patch("app.api.platform.system")
-    @unittest.mock.patch("app.api.subprocess.run")
+    @unittest.mock.patch("app.utils.platform.system")
+    @unittest.mock.patch("app.utils.subprocess.run")
     @unittest.mock.patch("pathlib.Path.exists")
     def test_open_file_exception(self, mock_exists, mock_run, mock_system):
         mock_exists.return_value = True
