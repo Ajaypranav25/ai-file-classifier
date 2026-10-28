@@ -1,10 +1,13 @@
 from __future__ import annotations
 import csv
+import logging
 
 
 from pathlib import Path
 
 from typing import Annotated
+
+log = logging.getLogger(__name__)
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -121,6 +124,7 @@ def open_file(path: str) -> dict:
         open_file_locally(p, check=True)
         return {"ok": True}
     except Exception as e:
+        log.error(f"Failed to open file: {e}", exc_info=True)
         raise HTTPException(500, str(e))
 
 
