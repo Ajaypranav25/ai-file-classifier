@@ -7,8 +7,6 @@ from pathlib import Path
 
 from typing import Annotated
 
-log = logging.getLogger(__name__)
-
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -19,6 +17,8 @@ from app.utils import open_file_locally
 from app.embed import get_embedder
 from app.classify import get_classifier
 from app.store import get_store
+
+log = logging.getLogger(__name__)
 
 app = FastAPI(title="Screenshot Search")
 
