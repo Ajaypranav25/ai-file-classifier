@@ -68,7 +68,7 @@ class Store:
 
     def search(
         self,
-        query_vector: 'Any',  # Can be list[float], numpy.ndarray, or pyarrow array
+        query_vector: Any,  # Can be list[float], numpy.ndarray, or pyarrow array
         limit: int = 40,
         category: Optional[str] = None,
         min_confidence: Optional[float] = None,
