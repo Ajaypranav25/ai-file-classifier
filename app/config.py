@@ -83,6 +83,7 @@ def _load() -> Config:
     cfg.thumbnails_dir.mkdir(parents=True, exist_ok=True)
     cfg.db_path.parent.mkdir(parents=True, exist_ok=True)
     cfg.classifier_path.parent.mkdir(parents=True, exist_ok=True)
+    cfg.label_encoder_path.parent.mkdir(parents=True, exist_ok=True)
     return cfg
 
 
