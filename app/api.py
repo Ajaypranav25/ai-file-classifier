@@ -1,6 +1,7 @@
 from __future__ import annotations
 import csv
 import logging
+import re
 
 
 from pathlib import Path
@@ -130,6 +131,9 @@ def open_file(path: str) -> dict:
 
 @app.get("/api/thumbnail/{file_id}")
 def thumbnail(file_id: str) -> FileResponse:
+
+    if not re.match(r'^[a-zA-Z0-9_-]+$', file_id):
+        raise HTTPException(400, "Invalid file_id")
     path = CFG.thumbnails_dir / f"{file_id}.jpg"
     if not path.exists():
         raise HTTPException(404, "No thumbnail")
