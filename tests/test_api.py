@@ -194,6 +194,11 @@ class TestAPI(unittest.TestCase):
                 CFG.labels_csv = original_csv
                 os.remove(f.name)
 
+    def test_thumbnail_invalid_id(self):
+        response = self.client.get("/api/thumbnail/invalid@id!")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"detail": "Invalid file_id"})
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

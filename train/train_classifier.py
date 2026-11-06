@@ -79,7 +79,7 @@ def main():
             X.append(vec)
             y.append(row["category"])
         except Exception as e:
-            log.warning(f"skipped {path.name}: {e}", exc_info=True)
+            log.warning(f"skipped {path.name}: {e}", exc_info=False)
         if i % 25 == 0:
             print(f"  ...{i}/{len(rows)}")
 
