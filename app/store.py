@@ -73,7 +73,7 @@ class Store:
         category: Optional[str] = None,
         min_confidence: Optional[float] = None,
     ) -> list[dict]:
-        q = self.table.search(query_vector).limit(limit * 3)  # overfetch, then filter
+        q = self.table.search(query_vector)
         conditions = []
         if category and category != "All":
             conditions.append(f"category = '{category}'")
@@ -81,8 +81,9 @@ class Store:
             conditions.append(f"confidence >= {min_confidence}")
         if conditions:
             q = q.where(" AND ".join(conditions))
-        results = q.to_list()
-        return results[:limit]
+
+        results = q.limit(limit).to_list()
+        return results
 
     def keyword_search(self, text: str, limit: int = 40, category: Optional[str] = None) -> list[dict]:
         """Simple substring fallback search over filenames + OCR text,
