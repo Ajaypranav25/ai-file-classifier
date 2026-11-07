@@ -78,6 +78,14 @@ def _extract_plain_text(path: Path) -> str:
 
 
 def extract(path: Path) -> Extracted:
+    """
+    Determines the file type from its extension and extracts its raw bytes
+    and text content appropriately.
+
+    If extraction fails for an image file, it gracefully falls back to returning
+    the filename as text to ensure the pipeline doesn't crash and the file is
+    still somewhat searchable.
+    """
     ext = path.suffix.lower()
 
     if ext in IMAGE_EXTS:

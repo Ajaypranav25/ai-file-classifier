@@ -1,3 +1,11 @@
+"""
+FastAPI application serving the Screenshot Search UI and backend endpoints.
+
+It provides functionality to search across indexed files using semantic and
+keyword matching, fetch metadata (categories, counts), open files locally,
+hot-reload the trained classifier, and process user-submitted corrections
+for active learning.
+"""
 from __future__ import annotations
 import csv
 import logging
